@@ -170,18 +170,7 @@ docker run -d --name nacos-vuln \
 
 要点：**不设 `NACOS_AUTH_ENABLE`**（保持默认 false）即复现默认部署场景；3.x 控制台端口已改为 **8080**，API 端口仍为 8848。
 
-## 7. 空间测绘语法
-
-```
-# FOFA / Hunter / Quake 通用
-app="NACOS" && port="8848"
-app="NACOS" && port="8080"          # 3.x 新版控制台端口
-app="NACOS" && domain="edu.cn"      # 教育行业定向
-```
-
-> 注：`body="v3/auth"` 之类 body 指纹基本无效——3.x 控制台是 SPA，首页源码不含 API 路径。
-
-## 8. 免责声明
+## 7. 免责声明
 
 本项目仅供已授权的安全测试、安全研究与教学用途。使用者需确保对目标系统拥有合法测试授权。因使用本项目造成的任何后果由使用者自行承担。
 
